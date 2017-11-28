@@ -21,7 +21,7 @@ FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(id_fornecedor)
 );
 
 CREATE TABLE Saida(
-	id_saida int(11) AUTO_INCREMENT PRIMARY KEY,
+    id_saida int(11) AUTO_INCREMENT PRIMARY KEY,
     qtd_saida float NOT NULL,
     valor double NOT NULL,
     data_saida DATE NOT NULL,
