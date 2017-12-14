@@ -1,15 +1,93 @@
-drop DATABASE controle_de_estoque;
 create database controle_de_estoque;
-use controle_de_estoque;
+use controle_de_estoque ;
 
 
 CREATE TABLE Usuario (
-    id_usuario INT PRIMARY KEY,
-    nome_usuario CHAR,
-    email CHAR,
-    senha INT,
-    cargo CHAR
+id_usuario int(11) PRIMARY KEY AUTO_INCREMENT,
+nome_usuario char(50) not null unique,
+email char(100) not null unique,
+senha char(50) not null,
+cargo char(100)not null
 );
+CREATE TABLE Fornecedor (
+id_fornecedor int(11) PRIMARY KEY AUTO_INCREMENT,
+razao_social char(100) not null unique,
+cnpj char(18) not null unique,
+endereco char(100) not null,
+telefone char(11) not null,
+id_usuario int(11),
+FOREIGN KEY(id_usuario) REFERENCES Usuario (id_usuario)
+);
+CREATE TABLE Produto (
+id_produto int(11) PRIMARY KEY AUTO_INCREMENT,
+nome_produto char(100) not null unique,
+marca char(100) not null,
+volume char(50) not null,
+valor int not null,
+id_usuario int(11),
+FOREIGN KEY(id_usuario) REFERENCES Usuario (id_usuario)
+);
+CREATE TABLE Fornece (
+id_fornecedor int(11),
+id_produto int(11),
+FOREIGN KEY(id_fornecedor) REFERENCES Fornecedor (id_fornecedor),
+FOREIGN KEY(id_produto) REFERENCES Produto (id_produto)
+);
+CREATE TABLE Entrada (
+id_entrada int(11) PRIMARY KEY AUTO_INCREMENT,
+fornecedor char(100) not null,
+nome_produto char(100) not null,
+qtd_produto int not null,
+valor int not null,
+data_entrada date not null,
+id_usuario int(11),
+FOREIGN KEY(id_usuario) REFERENCES Usuario (id_usuario)
+);
+CREATE TABLE Item (
+id_item int(11) PRIMARY KEY AUTO_INCREMENT,
+nome_item char(100) not null,
+qtd_item int not null,
+volume char(100) not null,
+validade date not null,
+valor int not null
+);
+CREATE TABLE Existem_em (
+id_item int(11),
+id_entrada int(11),
+FOREIGN KEY(id_item) REFERENCES Item (id_item),
+FOREIGN KEY(id_entrada) REFERENCES Entrada (id_entrada)
+);
+CREATE TABLE É (
+id_item int(11),
+id_produto int(11),
+FOREIGN KEY(id_item) REFERENCES Item (id_item),
+FOREIGN KEY(id_produto) REFERENCES Produto (id_produto)
+);
+CREATE TABLE Estoque (
+id_estoque int(11) PRIMARY KEY AUTO_INCREMENT,
+nome_produto char(100) not null unique,
+qtd_produto int not null,
+id_item int(11) not null,
+FOREIGN KEY(id_item) REFERENCES Item (id_item)
+);
+CREATE TABLE Saida (
+id_saida int(11) PRIMARY KEY AUTO_INCREMENT,
+nome_items char(100) not null,
+qtd_items int not null,
+valor int not null,
+data_saida date not null,
+id_usuario int(11) not null,
+FOREIGN KEY(id_usuario) REFERENCES Usuario (id_usuario)
+);
+
+CREATE TABLE Exitem_em1 (
+id_saida int(11),
+id_item int(11),
+FOREIGN KEY(id_saida) REFERENCES Saida (id_saida),
+FOREIGN KEY(id_item) REFERENCES Item (id_item)
+);
+
+
 
 CREATE TABLE Fornecedor (
     id_fornecedor INT PRIMARY KEY,
@@ -17,85 +95,8 @@ CREATE TABLE Fornecedor (
     cnpj CHAR,
     telefone CHAR,
     endereco CHAR,
-    FK_Usuario_id_usuario INT
-);
-
-CREATE TABLE Produto (
-    id_produto INT PRIMARY KEY,
-    nome_produto CHAR,
-    marca CHAR,
-    volume CHAR,
-    valor FLOAT,
-    FK_Usuario_id_usuario INT
-);
-
-CREATE TABLE Estoque (
-    id_estoque INT PRIMARY KEY,
-    qtd_produto FLOAT,
-    validade DATE,
-    FK_Produto_id_produto INT
-);
-
-CREATE TABLE Fornece (
-    FK_Fornecedor_id_fornecedor INT,
-    FK_Produto_id_produto INT
-);
-
-CREATE TABLE realiza_entrada (
     FK_Usuario_id_usuario INT,
-    FK_Estoque_id_estoque INT,
-    qtd_produto FLOAT,
-    data DATE
-);
+    FOREIGN KEY (FK_Usuario_id_usuario)
+    REFERENCES Usuario (id_usuario)
 
-CREATE TABLE realiza_saida (
-    FK_Usuario_id_usuario INT,
-    FK_Estoque_id_estoque INT,
-    qtd_produto FLOAT,
-    data DATE
 );
- 
-ALTER TABLE Fornecedor ADD CONSTRAINT FK_Fornecedor_1
-    FOREIGN KEY (FK_Usuario_id_usuario)
-    REFERENCES Usuario (id_usuario)
-    ON DELETE RESTRICT ON UPDATE RESTRICT;
- 
-ALTER TABLE Produto ADD CONSTRAINT FK_Produto_1
-    FOREIGN KEY (FK_Usuario_id_usuario)
-    REFERENCES Usuario (id_usuario)
-    ON DELETE RESTRICT ON UPDATE RESTRICT;
- 
-ALTER TABLE Estoque ADD CONSTRAINT FK_Estoque_1
-    FOREIGN KEY (FK_Produto_id_produto)
-    REFERENCES Produto (id_produto)
-    ON DELETE RESTRICT ON UPDATE RESTRICT;
- 
-ALTER TABLE Fornece ADD CONSTRAINT FK_Fornece_0
-    FOREIGN KEY (FK_Fornecedor_id_fornecedor)
-    REFERENCES Fornecedor (id_fornecedor)
-    ON DELETE RESTRICT ON UPDATE RESTRICT;
- 
-ALTER TABLE Fornece ADD CONSTRAINT FK_Fornece_1
-    FOREIGN KEY (FK_Produto_id_produto)
-    REFERENCES Produto (id_produto)
-    ON DELETE SET NULL ON UPDATE CASCADE;
- 
-ALTER TABLE realiza_entrada ADD CONSTRAINT FK_realiza_entrada_0
-    FOREIGN KEY (FK_Usuario_id_usuario)
-    REFERENCES Usuario (id_usuario)
-    ON DELETE RESTRICT ON UPDATE RESTRICT;
- 
-ALTER TABLE realiza_entrada ADD CONSTRAINT FK_realiza_entrada_1
-    FOREIGN KEY (FK_Estoque_id_estoque)
-    REFERENCES Estoque (id_estoque)
-    ON DELETE RESTRICT ON UPDATE RESTRICT;
- 
-ALTER TABLE realiza_saida ADD CONSTRAINT FK_realiza_saida_0
-    FOREIGN KEY (FK_Usuario_id_usuario)
-    REFERENCES Usuario (id_usuario)
-    ON DELETE RESTRICT ON UPDATE RESTRICT;
- 
-ALTER TABLE realiza_saida ADD CONSTRAINT FK_realiza_saida_1
-    FOREIGN KEY (FK_Estoque_id_estoque)
-    REFERENCES Estoque (id_estoque)
-    ON DELETE RESTRICT ON UPDATE RESTRICT;
